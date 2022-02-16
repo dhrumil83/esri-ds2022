@@ -27,7 +27,7 @@ export class EsriMap {
       map: map
     });
     this.featureLayer = new FeatureLayer({
-      url: "https://services.arcgis.com/OUDgwkiMsqiL8Tvp/arcgis/rest/services/PoolDetection_1556645153045/FeatureServer/0"
+      url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Places_of_Worship_India/FeatureServer/0"
     });
     map.add(this.featureLayer);
     this.mapView.goTo((await this.featureLayer.when()).fullExtent);
