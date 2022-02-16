@@ -39,6 +39,8 @@ export namespace Components {
         "labelClass": __esri.LabelClass;
         "labelContentRefElement": HTMLElement;
     }
+    interface EsriDs2022Map {
+    }
 }
 declare global {
     interface HTMLEsriDs2022ClusteringElement extends Components.EsriDs2022Clustering, HTMLStencilElement {
@@ -65,11 +67,18 @@ declare global {
         prototype: HTMLEsriDs2022LabelContentStyleElement;
         new (): HTMLEsriDs2022LabelContentStyleElement;
     };
+    interface HTMLEsriDs2022MapElement extends Components.EsriDs2022Map, HTMLStencilElement {
+    }
+    var HTMLEsriDs2022MapElement: {
+        prototype: HTMLEsriDs2022MapElement;
+        new (): HTMLEsriDs2022MapElement;
+    };
     interface HTMLElementTagNameMap {
         "esri-ds2022-clustering": HTMLEsriDs2022ClusteringElement;
         "esri-ds2022-label": HTMLEsriDs2022LabelElement;
         "esri-ds2022-label-content": HTMLEsriDs2022LabelContentElement;
         "esri-ds2022-label-content-style": HTMLEsriDs2022LabelContentStyleElement;
+        "esri-ds2022-map": HTMLEsriDs2022MapElement;
     }
 }
 declare namespace LocalJSX {
@@ -122,11 +131,14 @@ declare namespace LocalJSX {
         "onCloseLabelPopovers"?: (event: CustomEvent<any>) => void;
         "onLabelContentStyleChanges"?: (event: CustomEvent<any>) => void;
     }
+    interface EsriDs2022Map {
+    }
     interface IntrinsicElements {
         "esri-ds2022-clustering": EsriDs2022Clustering;
         "esri-ds2022-label": EsriDs2022Label;
         "esri-ds2022-label-content": EsriDs2022LabelContent;
         "esri-ds2022-label-content-style": EsriDs2022LabelContentStyle;
+        "esri-ds2022-map": EsriDs2022Map;
     }
 }
 export { LocalJSX as JSX };
@@ -137,6 +149,7 @@ declare module "@stencil/core" {
             "esri-ds2022-label": LocalJSX.EsriDs2022Label & JSXBase.HTMLAttributes<HTMLEsriDs2022LabelElement>;
             "esri-ds2022-label-content": LocalJSX.EsriDs2022LabelContent & JSXBase.HTMLAttributes<HTMLEsriDs2022LabelContentElement>;
             "esri-ds2022-label-content-style": LocalJSX.EsriDs2022LabelContentStyle & JSXBase.HTMLAttributes<HTMLEsriDs2022LabelContentStyleElement>;
+            "esri-ds2022-map": LocalJSX.EsriDs2022Map & JSXBase.HTMLAttributes<HTMLEsriDs2022MapElement>;
         }
     }
 }

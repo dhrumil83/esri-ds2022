@@ -12,7 +12,7 @@
   "unpkg": "dist/esri-ds2022/esri-ds2022.esm.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ionic-team/stencil-component-starter.git"
+    "url": "https://github.com/dhrumil83/esri-ds2022"
   },
   "files": [
     "dist/",

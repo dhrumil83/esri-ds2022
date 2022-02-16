@@ -1,44 +1,28 @@
-# esri-ds2022-clustering
+# esri-ds2022-map
 
 
 
 <!-- Auto Generated Below -->
 
 
-## Properties
-
-| Property  | Attribute | Description                                                                                                                  | Type           | Default     |
-| --------- | --------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------- | ----------- |
-| `layer`   | --        | arcgis/core/layers/FeatureLayer: https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html | `FeatureLayer` | `undefined` |
-| `mapView` | --        | arcgis/core/views/MapView: https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html             | `MapView`      | `undefined` |
-
-
-## Events
-
-| Event                     | Description                                     | Type               |
-| ------------------------- | ----------------------------------------------- | ------------------ |
-| `featureReductionUpdated` | Emitted when featureReduction has been updated. | `CustomEvent<any>` |
-
-
 ## Dependencies
-
-### Used by
-
- - [esri-ds2022-map](../map)
 
 ### Depends on
 
-- calcite-label
-- calcite-switch
-- calcite-slider
-- calcite-button
-- calcite-panel
-- [esri-ds2022-label](../label)
-- calcite-flow
+- [esri-ds2022-clustering](../clustering)
+- calcite-shell
+- calcite-shell-panel
+- calcite-action-bar
+- calcite-action
 
 ### Graph
 ```mermaid
 graph TD;
+  esri-ds2022-map --> esri-ds2022-clustering
+  esri-ds2022-map --> calcite-shell
+  esri-ds2022-map --> calcite-shell-panel
+  esri-ds2022-map --> calcite-action-bar
+  esri-ds2022-map --> calcite-action
   esri-ds2022-clustering --> calcite-label
   esri-ds2022-clustering --> calcite-switch
   esri-ds2022-clustering --> calcite-slider
@@ -102,8 +86,10 @@ graph TD;
   calcite-block --> calcite-action-menu
   calcite-handle --> calcite-icon
   calcite-fab --> calcite-button
-  esri-ds2022-map --> esri-ds2022-clustering
-  style esri-ds2022-clustering fill:#f9f,stroke:#333,stroke-width:4px
+  calcite-action-bar --> calcite-action-group
+  calcite-action-group --> calcite-action-menu
+  calcite-action-group --> calcite-action
+  style esri-ds2022-map fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------
