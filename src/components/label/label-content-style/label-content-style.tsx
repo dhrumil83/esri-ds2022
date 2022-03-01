@@ -1,10 +1,11 @@
-import { Component, h, Host, Prop, Event, EventEmitter, Listen, VNode } from "@stencil/core";
+import { Component, h, Prop, Event, EventEmitter, Listen, VNode } from "@stencil/core";
 
 // mark internal so it doesn't show up in stencil-doc output.
 // We don't want clients to use this component directly.
 /** @internal **/
 @Component({
   tag: "esri-ds2022-label-content-style",
+  styleUrl: "label-content-style.css",
   shadow: true
 })
 export class LabelContentStyle {
@@ -26,6 +27,26 @@ export class LabelContentStyle {
     this.closeLabelPopovers.emit();
   }
 
+  fontSizeSelectionChange = (event: CustomEvent): void => {
+    (this.labelClass.symbol as __esri.TextSymbol).font.size = Number(event.detail.value) * 0.75;
+    this.labelContentStyleChanges.emit();
+  };
+
+  colorChange = (event: CustomEvent): void => {
+    this.labelClass.symbol.color = (event.target as any)?.value;
+    this.labelContentStyleChanges.emit();
+  };
+
+  OffsetXChange = (event: CustomEvent): void => {
+    (this.labelClass.symbol as __esri.TextSymbol).xoffset = Number(event.detail.value);
+    this.labelContentStyleChanges.emit();
+  };
+
+  OffsetYChange = (event: CustomEvent): void => {
+    (this.labelClass.symbol as __esri.TextSymbol).yoffset = Number(event.detail.value);
+    this.labelContentStyleChanges.emit();
+  };
+
   render(): VNode {
     // change font size
     const fontSizeSelection = (
@@ -37,11 +58,7 @@ export class LabelContentStyle {
           min={5}
           max={125}
           value={`${(this.labelClass.symbol as __esri.TextSymbol).font.size / 0.75 || 0}`}
-          onCalciteInputInput={(event: CustomEvent): void => {
-            (this.labelClass.symbol as __esri.TextSymbol).font.size =
-              Number(event.detail.value) * 0.75;
-            this.labelContentStyleChanges.emit();
-          }}
+          onCalciteInputInput={this.fontSizeSelectionChange}
         />
       </calcite-label>
     );
@@ -55,10 +72,7 @@ export class LabelContentStyle {
           hideSaved={true}
           scale="m"
           value={this.labelClass.symbol.color?.toHex() || "#ffffff"}
-          onCalciteColorPickerInput={(event: any): void => {
-            this.labelClass.symbol.color = event.target?.value;
-            this.labelContentStyleChanges.emit();
-          }}
+          onCalciteColorPickerInput={this.colorChange}
         />
       </calcite-label>
     );
@@ -75,11 +89,8 @@ export class LabelContentStyle {
             value={`${(this.labelClass.symbol as __esri.TextSymbol).xoffset || 0}`}
             min={-20}
             max={20}
-            onCalciteInputInput={(event: CustomEvent): void => {
-              (this.labelClass.symbol as __esri.TextSymbol).xoffset = Number(event.detail.value);
-              this.labelContentStyleChanges.emit();
-            }}
-          ></calcite-input>
+            onCalciteInputInput={this.OffsetXChange}
+          />
         </calcite-label>
         <calcite-label scale="s">
           OffsetY
@@ -90,47 +101,39 @@ export class LabelContentStyle {
             value={`${(this.labelClass.symbol as __esri.TextSymbol).yoffset || 0}`}
             min={-20}
             max={20}
-            onCalciteInputInput={(event: CustomEvent): void => {
-              (this.labelClass.symbol as __esri.TextSymbol).yoffset = Number(event.detail.value);
-              this.labelContentStyleChanges.emit();
-            }}
-          ></calcite-input>
+            onCalciteInputInput={this.OffsetYChange}
+          />
         </calcite-label>
       </div>
     );
 
     return (
-      <Host>
-        {/* popver width and position is calculated based on labelContentRefElement */}
-        <calcite-popover
-          placement="leading-start"
-          open={true}
-          disablePointer={true}
-          referenceElement={this.labelContentRefElement}
-          offsetDistance={-Math.round(this.labelContentRefElement.getBoundingClientRect().width)}
-          offsetSkidding={0}
-          label=""
+      <calcite-popover
+        placement="leading-start"
+        open={true}
+        disablePointer={true}
+        referenceElement={this.labelContentRefElement}
+        offsetDistance={-Math.round(this.labelContentRefElement.getBoundingClientRect().width)}
+        offsetSkidding={0}
+        label=""
+        class="popover"
+      >
+        <calcite-panel
+          intlClose="Close"
+          dismissible={true}
+          heightScale="l"
           style={{
-            zIndex: "100"
+            width: `${this.labelContentRefElement.getBoundingClientRect().width}px`
           }}
         >
-          <calcite-panel
-            intlClose="Close"
-            dismissible={true}
-            heightScale="l"
-            style={{
-              width: `${this.labelContentRefElement.getBoundingClientRect().width}px`
-            }}
-          >
-            <div slot="header-content">Label style</div>
-            <calcite-block heading="" collapsible={false} open={true}>
-              {fontSizeSelection}
-              {color}
-              {offset}
-            </calcite-block>
-          </calcite-panel>
-        </calcite-popover>
-      </Host>
+          <div slot="header-content">Label style</div>
+          <calcite-block heading="" collapsible={false} open={true}>
+            {fontSizeSelection}
+            {color}
+            {offset}
+          </calcite-block>
+        </calcite-panel>
+      </calcite-popover>
     );
   }
 }

@@ -2,6 +2,7 @@ import { Component, h, Host, Prop, Event, EventEmitter, Listen, State, VNode } f
 import LabelClass from "@arcgis/core/layers/support/LabelClass";
 import * as clusterLabelCreator from "@arcgis/core/smartMapping/labels/clusters";
 import { defaultLabelProps, DisplayType } from "./_utils";
+import guid from "./_utils/guid";
 
 @Component({
   tag: "esri-ds2022-label",
@@ -44,8 +45,11 @@ export class Label {
    */
   @Event() closeLabelPopovers: EventEmitter;
 
-  // Need this to rerender on any change since we are making changes to label object, which will not trigger a rerender.
-  @State() reRender: boolean;
+  @State() hasLabelEnabled: boolean = null;
+
+  @State() deleteLabelContent = false;
+
+  @State() labelContents: VNode[] = [];
 
   labelingInfo: __esri.LabelClass[];
 
@@ -59,6 +63,12 @@ export class Label {
       this.displayType === DisplayType.feature
         ? this.layer.labelingInfo
         : (this.layer.featureReduction as __esri.FeatureReductionCluster).labelingInfo;
+    // add for existing via forEach since we dont want to map/clone labeling info
+    if (Array.isArray(this.labelingInfo)) {
+      this.labelingInfo.forEach((labelClass: __esri.LabelClass) => {
+        this.addLabelClass(labelClass);
+      });
+    }
   }
 
   componentDidLoad(): void {
@@ -144,9 +154,37 @@ export class Label {
       } else {
         this.labelingInfo = [labelClass];
       }
-      this.reRender = !this.reRender;
+      this.addLabelClass(labelClass);
     });
     return calciteFab;
+  }
+
+  labelSwitchToggle = (event: CustomEvent<boolean>): void => {
+    this.closeLabelPopovers.emit();
+    const checked = (event.target as HTMLCalciteSwitchElement).checked;
+    if (this.displayType === DisplayType.cluster) {
+      (this.layer.featureReduction as __esri.FeatureReductionCluster).labelsVisible = checked;
+    } else {
+      this.layer.labelsVisible = checked;
+    }
+    this.addLabelBtn.hidden = !checked;
+    this.hasLabelEnabled = checked;
+  };
+
+  labelContentDeleted(labelClass: __esri.LabelClass): void {
+    this.closeLabelPopovers.emit();
+    for (let x = 0; x < this.labelingInfo.length; x++) {
+      if (this.labelingInfo[x] === labelClass) {
+        this.labelingInfo.splice(x, 1);
+        this.labelContents.splice(x, 1);
+        break;
+      }
+    }
+    this.deleteLabelContent = !this.deleteLabelContent;
+  }
+
+  addLabelClass(labelClass: __esri.LabelClass): void {
+    this.labelContents = [...this.labelContents, this.labelContent(labelClass)];
   }
 
   // rendor methods
@@ -159,27 +197,10 @@ export class Label {
           <calcite-switch
             scale="s"
             checked={this.getLabelsVisible()}
-            onCalciteSwitchChange={async (event: CustomEvent) => {
-              this.closeLabelPopovers.emit();
-              const checked = (event.target as HTMLCalciteSwitchElement).checked;
-              if (this.displayType === DisplayType.cluster) {
-                (this.layer.featureReduction as __esri.FeatureReductionCluster).labelsVisible =
-                  checked;
-              } else {
-                this.layer.labelsVisible = checked;
-              }
-              this.addLabelBtn.hidden = !checked;
-              this.reRender = !this.reRender;
-            }}
+            onCalciteSwitchChange={this.labelSwitchToggle}
           />
         </calcite-label>
-        {this.getLabelsVisible() && (
-          <div class="content">
-            {this.labelingInfo?.map((label) => {
-              return this.labelContent(label);
-            })}
-          </div>
-        )}
+        {this.getLabelsVisible() && <div class="content">{this.labelContents}</div>}
       </div>
     );
 
@@ -206,17 +227,12 @@ export class Label {
   // esri-ds2022-label-content component
   labelContent = (labelClass: __esri.LabelClass): VNode => (
     <esri-ds2022-label-content
+      key={guid()}
       labelClass={labelClass}
       mapView={this.mapView}
       layer={this.layer}
       displayType={this.displayType}
-      onLabelContentDeleted={() => {
-        this.closeLabelPopovers.emit();
-        this.labelingInfo = this.labelingInfo.filter(
-          (label: __esri.LabelClass) => label !== labelClass
-        );
-        this.reRender = !this.reRender;
-      }}
+      onLabelContentDeleted={() => this.labelContentDeleted(labelClass)}
     />
   );
 }
